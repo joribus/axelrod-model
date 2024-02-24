@@ -4,8 +4,7 @@ def get_k_pos(L):
     col = random.randint(0, L - 1)
     return riga, col
 
-# dc = delta colonna
-# dr = delta riga
+# dc = delta colonna, dr = delta riga
 
 def get_neighbors(position, L):
     neighbors = []

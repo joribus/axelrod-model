@@ -7,7 +7,7 @@ from utility import *
 matrix = []
 
 L = 2
-feature = 4
+feature = 5
 traits = 3
 
 # Creiamo la matrice di individui

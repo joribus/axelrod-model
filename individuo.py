@@ -1,5 +1,6 @@
 import random
 
+
 class individuo:
     def __init__(self, feature=4, traits=3):
         self.feature = []
