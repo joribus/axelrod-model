@@ -8,3 +8,4 @@ class individuo:
 
     def showindividuo(self):
         print(self.feature)
+

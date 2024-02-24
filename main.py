@@ -7,29 +7,50 @@ from utility import *
 matrix = []
 
 L = 2
+feature = 4
+traits = 3
 
 # Creiamo la matrice di individui
 # il trattino non è un numero, fa L volte la cosa sotto
 for _ in range(L):
     row = []  # Creiamo una nuova riga della matrice
     for _ in range(L):
-        row.append(individuo())  # Aggiungiamo un nuovo individuo alla riga
+        row.append(individuo(feature, traits))  # Aggiungiamo un nuovo individuo alla riga
     matrix.append(row)  # Aggiungiamo la riga alla matrice
 
 matrix = np.array(matrix)
 
-# Stampiamo la matrice di individui
-for row in matrix:
-    for individuo in row:
-        individuo.showindividuo()
-
 # seleziono individuo k
-position = get_k_pos(L)
-matrix[position].showindividuo()
+pos_k = get_k_pos(L)
+#matrix[pos_k].showindividuo()  # individuo k in vettore
+
+#print(pos_k)
+#print(get_neighbors(pos_k, L))
+#print(get_r_pos(pos_k, L))
+
+pos_r = get_r_pos(pos_k, L)
+
+# ho istanziato
+k = matrix[pos_k]
+r = matrix[pos_r]
+
+k.showindividuo()
+r.showindividuo()
+print(get_diff(k,r))
+print(get_pos(k,r))
+
+print(get_prob(k,r))
+
+if interaction(k,r):
+    selection = random.choice(get_pos(k,r))
+    k.feature[selection] = r.feature[selection]
+    print("Ho fatto lo scambio")
+
+print(k.feature)
 
 
-print(position)
-print(get_neighbors(position, L))
-print(get_r_pos(position, L))
+
+
+
 
 
