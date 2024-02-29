@@ -1,4 +1,20 @@
 import random
+import numpy as np
+# dal file individuo importa la classe individuo
+from individuo import individuo
+
+def crea_matrice(L, feature, traits):
+    matrix = []
+    # Creiamo la matrice di individui
+    # il trattino non è un numero, fa L volte la cosa sotto
+    for _ in range(L):
+        row = []  # Creiamo una nuova riga della matrice
+        for _ in range(L):
+            row.append(individuo(feature, traits))  # Aggiungiamo un nuovo individuo alla riga
+        matrix.append(row)  # Aggiungiamo la riga alla matrice
+
+    return np.array(matrix)
+
 def get_k_pos(L):
     riga = random.randint(0, L - 1)
     col = random.randint(0, L - 1)
@@ -19,7 +35,6 @@ def get_neighbors(position, L):
 
 def get_r_pos(position, L):
     return random.choice(get_neighbors(position, L))
-
 
 
 def get_diff(k, r):
