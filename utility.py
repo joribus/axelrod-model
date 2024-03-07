@@ -1,72 +1,81 @@
 import random
 import numpy as np
-# dal file individuo importa la classe individuo
-from individuo import individuo
+from Individuo import Individuo
 
-def crea_matrice(L, feature, traits):
+
+def create_matrix(L, f, t):
     matrix = []
-    # Creiamo la matrice di individui
-    # il trattino non è un numero, fa L volte la cosa sotto
-    for _ in range(L):
-        row = []  # Creiamo una nuova riga della matrice
-        for _ in range(L):
-            row.append(individuo(feature, traits))  # Aggiungiamo un nuovo individuo alla riga
-        matrix.append(row)  # Aggiungiamo la riga alla matrice
+    for x in range(L):
+        row = []
+        for y in range(L):
+            row.append(Individuo(x, y, f, t))
+        matrix.append(row)
 
     return np.array(matrix)
 
-def get_k_pos(L):
-    riga = random.randint(0, L - 1)
-    col = random.randint(0, L - 1)
-    return riga, col
 
-# dc = delta colonna, dr = delta riga
+def print_matrix(matrix):
+    for i in range(len(matrix)):
+        for j in range(len(matrix)):
+            print(f"({i}, {j}): {matrix[i, j].feature}")
 
-def get_neighbors(position, L):
+
+def get_k(matrix):
+    r = random.randint(0, len(matrix) - 1)
+    c = random.randint(0, len(matrix) - 1)
+
+    return matrix[r, c]
+
+
+def get_neighbors(k, matrix):
     neighbors = []
 
     # Calcola i vicini della cella attuale
     for dr, dc in [(-1, 0), (0, 1), (1, 0), (0, -1)]:
-        r, c = position[0] + dr, position[1] + dc
-        if 0 <= r < L and 0 <= c < L:
-            neighbors.append((r, c))
+        r, c = k.x + dr, k.y + dc
+        if 0 <= r < len(matrix) and 0 <= c < len(matrix):
+            neighbors.append(matrix[r, c])
 
     return neighbors
 
-def get_r_pos(position, L):
-    return random.choice(get_neighbors(position, L))
+
+def get_r(k, matrix):
+    if get_neighbors(k, matrix):
+        return random.choice(get_neighbors(k, matrix))
+    else:
+        return k
 
 
-def get_diff(k, r):
-    k_r = []
+def get_Nsimilarity(k, r):  # n_kr
+    n = 0
     for i in range(len(k.feature)):
-        if k.feature[i] != r.feature[i]:
-            k_r.append(k.feature[i])
-
-    return k_r
-
-def get_pos(k ,r):
-    position = []
-    for i in range(len(k.feature)):
-        if k.feature[i] != r.feature[i]:
-            position.append(i)
-
-    return position
-
-def get_prob(k, r):
-    n_kr = len(k.feature) - len(get_diff(k,r))
-    prob = n_kr / len(k.feature)
-
-    return prob
-
-def print_matrix(matrix):
-    # Stampiamo la matrice di individui
-    for row in matrix:
-        for individuo in row:
-            individuo.showindividuo()
-
-def interaction(k,r):
-    return random.uniform(0,1) < get_prob(k,r)
+        if k.feature[i] == r.feature[i]:
+            n += 1
+    return n
 
 
+def interaction(k, r):
+    prob = get_Nsimilarity(k, r) / len(k.feature)
+    if prob == 1:
+        return False
+    return random.uniform(0, 1) < prob
 
+
+def get_H(k, matrix, copiedFeature_index):
+    H = []
+    for n in get_neighbors(k, matrix):
+        if n.feature[copiedFeature_index] == k.feature[copiedFeature_index]:
+            H.append(n)
+    return H
+
+
+def prob_state(matrix, k, copiedFeature_index):
+    n_feature = len(k.feature)
+    summation = 0
+    H = get_H(k, matrix, copiedFeature_index)
+
+    for n in H:
+        n_similarity = get_Nsimilarity(k, n)
+        summation += (n_similarity / n_feature) * (1 / (n_feature - n_similarity))
+
+    return (1 / ((len(matrix) ** 2) * len(H))) * summation
