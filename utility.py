@@ -40,10 +40,12 @@ def get_neighbors(k, matrix):
 
 
 def get_r(k, matrix):
-    if get_neighbors(k, matrix):
-        return random.choice(get_neighbors(k, matrix))
-    else:
-        return k
+    neighbors = get_neighbors(k, matrix)
+    for n in neighbors:
+        if n.feature == k.feature:
+            neighbors.remove(n)
+    #print_individuals(neighbors)
+    return random.choice(neighbors)
 
 
 def get_Nsimilarity(k, r):  # n_kr
@@ -73,9 +75,30 @@ def prob_state(matrix, k, copiedFeature_index):
     n_feature = len(k.feature)
     summation = 0
     H = get_H(k, matrix, copiedFeature_index)
-
     for n in H:
         n_similarity = get_Nsimilarity(k, n)
+        if n_similarity == n_feature:
+            return 1
         summation += (n_similarity / n_feature) * (1 / (n_feature - n_similarity))
 
     return (1 / ((len(matrix) ** 2) * len(H))) * summation
+
+
+def print_individuals(individuals):
+    print("-------------------------")
+    print("vicini")
+    for individual in individuals:
+        individual.showindividuo()
+    print("-------------------------")
+
+
+def are_all_cells_equal(matrix):
+    L = len(matrix)
+    if matrix[L-1][L-1].feature != matrix[0][0].feature:
+        return False
+    for i in range(L - 1):
+        for j in range(L - 1):
+            if matrix[i][j].feature != matrix[i + 1][j].feature or matrix[i][j].feature != matrix[i][j + 1].feature:
+                return False
+    return True
+
