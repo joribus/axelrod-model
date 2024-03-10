@@ -1,6 +1,10 @@
+import math
 import random
 import numpy as np
 from Individuo import Individuo
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+from matplotlib.colors import ListedColormap
 
 
 def create_matrix(L, f, t):
@@ -12,6 +16,18 @@ def create_matrix(L, f, t):
         matrix.append(row)
 
     return np.array(matrix)
+
+
+def transform_matrix(matrix):
+    L = len(matrix)
+    new_matrix = []
+    for x in range(L):
+        row = []
+        for y in range(L):
+            row.append(matrix[x][y].feature)
+        new_matrix.append(row)
+
+    return np.array(new_matrix)
 
 
 def print_matrix(matrix):
@@ -44,7 +60,7 @@ def get_r(k, matrix):
     for n in neighbors:
         if n.feature == k.feature:
             neighbors.remove(n)
-    #print_individuals(neighbors)
+    # print_individuals(neighbors)
     return random.choice(neighbors)
 
 
@@ -92,13 +108,59 @@ def print_individuals(individuals):
     print("-------------------------")
 
 
-def are_all_cells_equal(matrix):
+# il controllo si fa su interaction pittosto che sull'uguaglianza
+# se non c'è nessuna coppia chw puo interagire allora fermo
+
+
+def check_cells_interaction(matrix):
     L = len(matrix)
-    if matrix[L-1][L-1].feature != matrix[0][0].feature:
-        return False
-    for i in range(L - 1):
-        for j in range(L - 1):
-            if matrix[i][j].feature != matrix[i + 1][j].feature or matrix[i][j].feature != matrix[i][j + 1].feature:
-                return False
+    for i in range(L):
+        for j in range(L):
+            k = matrix[i, j]
+            neighbors = get_neighbors(k, matrix)
+            for neighbor in neighbors:
+                if cells_interaction(k, neighbor):
+                    return False
+
     return True
 
+
+def cells_interaction(k, r):
+    prob = get_Nsimilarity(k, r) / len(k.feature)
+    if prob == 1 or prob == 0:
+        return False
+    return True
+
+
+def integers_to_colors(array_of_integers, cmap_name='turbo'):
+    cmap = plt.get_cmap(cmap_name)
+    mean_color = cmap(array_to_n(array_of_integers))
+    return mean_color
+
+
+def transform_matrix_to_color(matrix):
+    L = len(matrix)
+    new_matrix = []
+    for x in range(L):
+        row = []
+        for y in range(L):
+            row.append(integers_to_colors(matrix[x][y]))
+        new_matrix.append(row)
+
+    return np.array(new_matrix)
+
+
+def array_to_n(array):
+    arr_tuple = tuple(array) #mette le tonde al posto delle quadre
+
+    # Use Python's built-in hash function
+    hash_value = hash(arr_tuple)
+
+    # Ensure the hash value is positive
+    hash_value = abs(hash_value)
+
+    large_number = 10 ** 18  # You can adjust this depending on the desired precision
+    normalized_value = hash_value % large_number
+    result_decimal = normalized_value / large_number
+
+    return result_decimal
