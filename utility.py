@@ -121,7 +121,6 @@ def check_cells_interaction(matrix):
             for neighbor in neighbors:
                 if cells_interaction(k, neighbor):
                     return False
-
     return True
 
 
@@ -153,13 +152,12 @@ def transform_matrix_to_color(matrix):
 def array_to_n(array):
     arr_tuple = tuple(array) #mette le tonde al posto delle quadre
 
-    # Use Python's built-in hash function
     hash_value = hash(arr_tuple)
 
-    # Ensure the hash value is positive
+    # il valore hash deve essere positivo
     hash_value = abs(hash_value)
 
-    large_number = 10 ** 18  # You can adjust this depending on the desired precision
+    large_number = 10 ** 18  # si aggiusta in base alla grandezza che si vuole ottenere
     normalized_value = hash_value % large_number
     result_decimal = normalized_value / large_number
 
