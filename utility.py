@@ -1,10 +1,8 @@
-import math
+
 import random
 import numpy as np
 from Individuo import Individuo
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-from matplotlib.colors import ListedColormap
 
 
 def create_matrix(L, f, t):
@@ -121,6 +119,7 @@ def check_cells_interaction(matrix):
             for neighbor in neighbors:
                 if cells_interaction(k, neighbor):
                     return False
+
     return True
 
 
@@ -150,15 +149,46 @@ def transform_matrix_to_color(matrix):
 
 
 def array_to_n(array):
-    arr_tuple = tuple(array) #mette le tonde al posto delle quadre
+    arr_tuple = tuple(array)  # mette le tonde al posto delle quadre
 
+    # Use Python's built-in hash function
     hash_value = hash(arr_tuple)
 
-    # il valore hash deve essere positivo
+    # Ensure the hash value is positive
     hash_value = abs(hash_value)
 
-    large_number = 10 ** 18  # si aggiusta in base alla grandezza che si vuole ottenere
+    large_number = 10 ** 18  # You can adjust this depending on the desired precision
     normalized_value = hash_value % large_number
     result_decimal = normalized_value / large_number
 
     return result_decimal
+
+
+def normalization(matrix):
+    n_features = len(matrix[0][0])
+    bigger_value = np.max(matrix)
+    M = np.random.randint(0, 100, size=(3, n_features))
+    max_vector = np.dot(M, [bigger_value for _ in range(n_features)])
+    new_matrix = []
+    for row in matrix:
+        new_row = []
+        for element in row:
+            result = np.dot(M, element)
+            new_row.append(min_max_normalization(max_vector, result))
+        new_matrix.append(new_row)
+
+    return new_matrix
+
+
+def min_max_normalization(maxr, vector):
+    return vector / maxr
+
+def number_of_regions(matrix):
+    dictionary = {}
+    for row in transform_matrix(matrix):
+        for element in row:
+            i = array_to_n(element)
+            if i not in dictionary:
+                dictionary[i] = 0
+
+    return len(dictionary)
